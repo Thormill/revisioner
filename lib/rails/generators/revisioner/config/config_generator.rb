@@ -21,6 +21,11 @@ module Revisioner
         copy_migration "agent_revisions"
       end
 
+      # error fix
+      def self.next_migration_number(dir)
+        Time.now.utc.strftime("%Y%m%d%H%M%S")
+      end
+
     protected
 
       def copy_migration(filename)
