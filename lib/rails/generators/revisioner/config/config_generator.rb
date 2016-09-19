@@ -24,7 +24,7 @@ module Revisioner
       # error fix
       def self.next_migration_number(dir)
         timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
-        @@previous_timestamp ||= timestamp
+        @@previous_timestamp ||= timestamp.to_i
 
         timestamp = timestamp.to_i + 1 while @@previous_timestamp >= timestamp
 
