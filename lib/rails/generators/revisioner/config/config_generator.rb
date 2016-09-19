@@ -1,4 +1,6 @@
 # encoding: utf-8
+# @author Anton Shishkin
+# generates default config and required migrations
 
 module Revisioner
   module Generators
