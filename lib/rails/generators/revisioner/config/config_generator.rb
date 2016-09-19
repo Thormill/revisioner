@@ -24,10 +24,13 @@ module Revisioner
       # error fix
       def self.next_migration_number(dir)
         timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
-        @@previous_timestamp ||= timestamp
-        timestamp += 1 while @@previous_timestamp >= timestamp
+        unless @@previous_timestamp.nil?
+          timestamp = timestamp.to_i + 1 while @@previous_timestamp >= timestamp
+        end
 
-        timestamp
+        @@previous_timestamp = timestamp.to_i
+
+        timestamp.to_s
       end
 
     protected
