@@ -5,8 +5,9 @@
 module Revisioner
   module Generators
     class ConfigGenerator < Rails::Generators::Base
-      desc 'Creates a Revisioner gem configuration file at config/revisioner.yml'
+      include Rails::Generators::Migration
 
+      desc 'Creates a Revisioner gem configuration file at config/revisioner.yml'
       def self.source_root
         @_sugarcrm_source_root ||= File.expand_path("../templates", __FILE__)
       end
@@ -15,9 +16,21 @@ module Revisioner
         template 'revisioner.yml', File.join('config', 'revisioner.yml')
       end
 
-      # def create_initializer_file
-      #   template 'initializer.rb', File.join('config', 'initializers', 'revisioner.rb')
-      # end
+      def copy_migrations
+        copy_migration "agent_transactions"
+        copy_migration "agent_revisions"
+      end
+
+    protected
+
+      def copy_migration(filename)
+        if self.class.migration_exists?("db/migrate", "#{filename}")
+          say_status("skipped", "Migration #{filename}.rb already exists")
+        else
+          migration_template "migrations/#{filename}.rb", "db/migrate/#{filename}.rb"
+        end
+      end
+
     end
   end
 end
