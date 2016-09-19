@@ -17,8 +17,8 @@ module Revisioner
       end
 
       def copy_migrations
-        copy_migration "agent_transactions"
-        copy_migration "agent_revisions"
+        copy_migration "create_agent_transactions"
+        copy_migration "create_agent_revisions"
       end
 
       # error fix
