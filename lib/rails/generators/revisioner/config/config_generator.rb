@@ -26,7 +26,7 @@ module Revisioner
         timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
         @@previous_timestamp ||= timestamp.to_i
 
-        timestamp = timestamp.to_i + 1 while @@previous_timestamp >= timestamp
+        timestamp = timestamp.to_i + 1 while @@previous_timestamp >= timestamp.to_i
 
         @@previous_timestamp = timestamp.to_i
 
