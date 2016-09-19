@@ -1,0 +1,7 @@
+config:
+  processing_url: http://127.0.0.1/revisioner # location to grab transactions from
+  remote_transaction_fields_mapping:
+    agent: agent
+    create_time: created_at
+    amount: amount
+
