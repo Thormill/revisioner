@@ -115,6 +115,8 @@ module Revisioner
         end
 
         if !data.empty?
+          puts "data[0]: #{data[0]}"
+          puts "#{data[0][:agent_code]}"
           rev = Revisioner::AgentRevision.create(:agent_code => data[0][:agent_code],
                                     :date_start => date_min.beginning_of_day,
                                     :date_end => date_max.end_of_day)
