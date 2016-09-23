@@ -32,15 +32,15 @@ module Revisioner
     class << self
       def get_agent(type) # private
         agent = case type
-        when AGENT_QIWI
+        when "qiwi"
           Qiwi
-        when AGENT_WEBMONEY
+        when "wbm"
           Webmoney
         when AGENT_MOBI
           Mobi
-        when AGENT_YANDEX
+        when "yandex"
           Yandex
-        when AGENT_MOBI_NEW
+        when "new_mobi"
           Mobi #TODO new mobi?
         end
 
@@ -74,14 +74,18 @@ module Revisioner
 
           agent_kind = case first_row
           when Yandex::HEADERS
-            AGENT_YANDEX
+            "yandex"
+            # AGENT_YANDEX
           when Qiwi::HEADERS
-            AGENT_QIWI
+            "qiwi"
+            # AGENT_QIWI
           else
             if WEBMONEY_CHECK["value"] == first_row[WEBMONEY_CHECK["position"]]
-              AGENT_WEBMONEY
+              "wbm"
+              # AGENT_WEBMONEY
             elsif first_row.count < 5 #TODO constant me!
-              AGENT_MOBI_NEW
+              "new_mobi"
+              # AGENT_MOBI_NEW
             end
           end
         end
@@ -93,7 +97,79 @@ module Revisioner
         agent = define_agent(filepath, filename) # мб сразу возвращать класс обработчика
         parser_class = get_agent(agent)
 
-        parser_class.send(:revision_from_file, filepath, filename)
+
+        data = []
+        date_min = Time.now
+        date_max = Time.parse("2001-01-01")
+
+        encodings = EncodingSampler::Sampler.new(filepath, ['UTF-8']).valid_encodings
+        encoding = nil
+        encoding = 'windows-1251:utf-8' unless encodings.include? 'UTF-8'
+
+        data = begin
+          parser_class.send(:revision_from_file, filepath, filename)
+        rescue Exception => e
+          Log.error("#{filename}. Не удалось создать сверку с источниками денег: %s: %s" % [e.class, e.message], component: Components::PAYMENT_AGENT_REVISION)
+          return false
+        end
+
+        if !data.empty?
+          rev = AgentRevision.create(:agent_code => data[0][:agent_code],
+                                    :date_start => date_min.beginning_of_day,
+                                    :date_end => date_max.end_of_day)
+          rev.payment_agent_transactions.create(data)
+
+          revision_result = rev.get_differences
+
+          case rev.count = revision_result.count
+          when 0
+            rev.status = Revisioner::REVISION_SUCCESS
+          else
+            rev.status = Revisioner::REVISION_FAILURE
+          end
+
+
+          # agent = "qiwi"
+          external_payment = Config[:external_payment_name].constantize
+          payment_transaction = Config[:payment_transaction_name].constantize
+
+          external_payment.where("external_payment_time BETWEEN ? AND ?", rev.date_start, rev.date_end)
+                           .where("payment_system LIKE '%#{agent}%'")
+                           .update_all(payment_agent_revision_status: Revisioner::REVISION_SUCCESS)
+
+          payment_transaction.where("payment_time BETWEEN ? AND ?", rev.date_start, rev.date_end)
+                            .where("payment_system LIKE '%#{agent}%'")
+                            .update_all(payment_agent_revision_status: Revisioner::REVISION_SUCCESS)
+
+          revision_result.each do |transaction|
+            if transaction.id.blank? && transaction.transaction_id.present?
+              case transaction.class_name
+              when external_payment
+                external_payment.find(transaction.transaction_id)
+                                 .update_attributes(payment_agent_revision_status: Revisioner::REVISION_NOT_FOUND)
+              when payment_transaction
+                payment_transaction.find(transaction.transaction_id)
+                                  .update_attributes(payment_agent_revision_status: Revisioner::REVISION_NOT_FOUND)
+              end
+            elsif transaction.id.present? && transaction.transaction_id.present?
+              case transaction.class_name
+              when external_payment
+                external_payment.find(transaction.transaction_id)
+                                .update_attributes(payment_agent_revision_status: Revisioner::REVISION_DIFFERENCE)
+              when payment_transaction
+                payment_transaction.find(transaction.transaction_id)
+                                .update_attributes(payment_agent_revision_status: Revisioner::REVISION_DIFFERENCE)
+              end
+            end
+          end
+
+          rev.save
+          return true
+        else
+          Log.error("#{filename}. Не удалось создать сверку с источниками денег: не удалось получить данные из файла", component: Components::PAYMENT_AGENT_REVISION)
+          return false
+        end
+
       end
 
       def get_file(filepath, filename)
