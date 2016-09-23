@@ -99,7 +99,6 @@ module Revisioner
         parser_class = get_agent(agent)
 
 
-        data = []
         date_min = Time.now
         date_max = Time.parse("2001-01-01")
 
@@ -107,7 +106,7 @@ module Revisioner
         encoding = nil
         encoding = 'windows-1251:utf-8' unless encodings.include? 'UTF-8'
 
-        data = begin
+        data, date_max, date_min = begin
           parser_class.send(:revision_from_file, filepath, date_min, date_max)
         rescue Exception => e
           Log.error("#{filepath.split('/').last}. Не удалось создать сверку с источниками денег: %s: %s\n\n%s" % [e.class, e.message, e.backtrace], component: Components::PAYMENT_AGENT_REVISION)
