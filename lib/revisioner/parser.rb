@@ -30,6 +30,24 @@ module Revisioner
 
 
     class << self
+      def get_agent(type) # private
+        agent = case type
+        when AGENT_QIWI
+          Qiwi
+        when AGENT_WEBMONEY
+          Webmoney
+        when AGENT_MOBI
+          Mobi
+        when AGENT_YANDEX
+          Yandex
+        when AGENT_MOBI_NEW
+          Mobi #TODO new mobi?
+        end
+
+        agent
+      end
+
+
       def define_agent(filepath, filename)
         agent_kind = nil
 
@@ -70,6 +88,21 @@ module Revisioner
 
         return agent_kind
       end
+
+      def read_file(filepath, filename)
+        agent = define_agent(filepath, filename) # мб сразу возвращать класс обработчика
+        parser_class = get_agent(agent)
+
+        parser_class.send(:revision_from_file, filepath, filename)
+      end
+
+      def get_file(filepath, filename)
+        agent = define_agent(filepath, filename) # мб сразу возвращать класс обработчика
+        parser_class = get_agent(agent)
+
+        parser_class.send(:download_file, filepath, filename)
+      end
+
     end
   end
 end
