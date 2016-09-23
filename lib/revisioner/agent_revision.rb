@@ -32,7 +32,7 @@ module Revisioner
         payments_column = "pc_agent_id"
       end
 
-      transactions_table = Revisioner::AgentTransaction
+      transactions_table = Revisioner::AgentTransaction.table_name
 
       External::PaymentAgentTransaction.joins("FULL OUTER JOIN (SELECT id AS transaction_id,
                                                                        'payments' AS table_name,
