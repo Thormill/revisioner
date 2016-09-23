@@ -1,5 +1,5 @@
 class Revisioner::Config
-  class Error < StandardException; end;
+  class Error < Exception; end;
   # True global settings which you can use as:
   # Settings.pc_payment_api
   #  => {"namespace"=>"http://pc.tprs.ru/api/processing", "endpoint"=>"https://demoapi.tprs.ru/processing", "cert"=>"./config/certs/dev/pc.crt", "key"=>"./config/certs/dev/pc.nopass.key", "ca_cert"=>"./config/certs/dev/pc.ca.crt"}
