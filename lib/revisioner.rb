@@ -2,6 +2,8 @@ require "revisioner/version"
 require "revisioner/config"
 require "revisioner/importer"
 require "revisioner/parser"
+require "revisioner/agent_revision"
+require "revisioner/agent_transaction"
 
 module Revisioner
   # Your code goes here...
