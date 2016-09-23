@@ -1,12 +1,12 @@
 # @author Anton Shishkin
 # abstract class for report file parsing
 
-# require "revisioner/parsers/qiwi"
-require "parsers/qiwi"
-# require "revisioner/parsers/yandex"
-require "parsers/yandex"
-# require "revisioner/parsers/mobi"
-require "parsers/mobi"
+require "revisioner/parsers/qiwi"
+# require "parsers/qiwi"
+require "revisioner/parsers/yandex"
+# require "parsers/yandex"
+require "revisioner/parsers/mobi"
+# require "parsers/mobi"
 
 class Revisioner::Parser
   AGENT_QIWI = 1
