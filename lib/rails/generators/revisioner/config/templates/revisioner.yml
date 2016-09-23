@@ -1,5 +1,7 @@
 revision_table_name: agent_revisions
 agent_transaction_table_name: agent_transactions
+payment_transaction_name: PaymentTransaction
+external_payment_name: External::Payment
 processing_url: http://127.0.0.1/revisioner # location to grab transactions from
 remote_transaction_fields_mapping:
   agent: agent
