@@ -25,7 +25,7 @@ module Revisioner::Parser
         mobi_data.each do |hash|
           if hash["Дата и время перевода"].is_a?(Date)
             date = hash["Дата и время перевода"].to_time.localtime - 3.hours
-            data << Revisioner::AgentTransaction.new ({
+            data << Revisioner::AgentTransaction.new({
                                   :agent_code => Revisioner::Parser::AGENT_MOBI,
                                   :agent_id => hash["Номер перевода"],
                                   :amount => hash["Сумма перевода"].to_i,
