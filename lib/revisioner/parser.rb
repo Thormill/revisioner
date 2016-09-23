@@ -30,43 +30,46 @@ module Revisioner
 
 
     class << self
-      # def self.define_agent(filepath, filename)
-      #   agent_kind = nil
+      def define_agent(filepath, filename)
+        agent_kind = nil
 
-      #   encodings = EncodingSampler::Sampler.new(filepath, ['UTF-8']).valid_encodings
-      #   encoding = nil
-      #   encoding = 'windows-1251:utf-8' unless encodings.include? 'UTF-8'
+        encodings = EncodingSampler::Sampler.new(filepath, ['UTF-8']).valid_encodings
+        encoding = nil
+        encoding = 'windows-1251:utf-8' unless encodings.include? 'UTF-8'
 
-      #   if /\.xls/ =~ filename
-      #     xlsx = Roo::Spreadsheet.open(filepath, extension: filename.split('.')[-1].to_sym)
-      #     sheet = xlsx.sheet(0)
+        if /\.xls/ =~ filename
+          xlsx = Roo::Spreadsheet.open(filepath, extension: filename.split('.')[-1].to_sym)
+          sheet = xlsx.sheet(0)
 
-      #     sheet.each do |row|
-      #       row = row.inject([]) { |h, v| h << v.strip unless v.blank?; h}
-      #       if MOBI_HEADERS == row
-      #         agent_kind = AGENT_MOBI
-      #         break
-      #       end
-      #     end
+          sheet.each do |row|
+            row = row.inject([]) { |h, v| h << v.strip unless v.blank?; h}
+            if MOBI::HEADERS == row
+              agent_kind = AGENT_MOBI
+              break
+            end
+          end
 
-      #   else
-      #     csv_data = CSV.read(filepath, encoding: encoding, col_sep: ';', skip_blanks: true, headers: false, skip_lines: /^[^;]*$/)
+        else
+          csv_data = CSV.read(filepath, encoding: encoding, col_sep: ';', skip_blanks: true, headers: false, skip_lines: /^[^;]*$/)
 
-      #     first_row = csv_data[0].inject([]) { |h, v| h << v.strip unless v.blank?; h}
+          first_row = csv_data[0].inject([]) { |h, v| h << v.strip unless v.blank?; h}
 
-      #     if YANDEX_HEADERS == first_row
-      #       agent_kind = AGENT_YANDEX
-      #     elsif WEBMONEY_CHECK["value"] == first_row[WEBMONEY_CHECK["position"]]
-      #       agent_kind = AGENT_WEBMONEY
-      #     elsif QIWI_HEADERS == first_row
-      #       agent_kind = AGENT_QIWI
-      #     elsif first_row.count < 5
-      #       agent_kind = AGENT_MOBI_NEW
-      #     end
-      #   end
+          agent_kind = case first_row
+          when YANDEX::HEADERS
+            AGENT_YANDEX
+          when QIWI::HEADERS
+            AGENT_QIWI
+          else
+            if WEBMONEY_CHECK["value"] == first_row[WEBMONEY_CHECK["position"]]
+              AGENT_WEBMONEY
+            elsif first_row.count < 5
+              AGENT_MOBI_NEW
+            end
+          end
+        end
 
-      #   return agent_kind
-      # end
+        return agent_kind
+      end
     end
   end
 end
