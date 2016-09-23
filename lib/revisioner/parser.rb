@@ -131,8 +131,8 @@ module Revisioner
 
 
           # agent = "qiwi"
-          external_payment = Config[:external_payment_name].constantize
-          payment_transaction = Config[:payment_transaction_name].constantize
+          external_payment = Revisioner::Config[:external_payment_name].constantize
+          payment_transaction = Revisioner::Config[:payment_transaction_name].constantize
 
           external_payment.where("external_payment_time BETWEEN ? AND ?", rev.date_start, rev.date_end)
                            .where("payment_system LIKE '%#{agent}%'")
