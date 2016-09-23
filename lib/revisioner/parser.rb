@@ -48,8 +48,9 @@ module Revisioner
       end
 
 
-      def define_agent(filepath, filename)
+      def define_agent(filepath)
         agent_kind = nil
+        filename = filepath.split("/").last
 
         encodings = EncodingSampler::Sampler.new(filepath, ['UTF-8']).valid_encodings
         encoding = nil
@@ -93,8 +94,8 @@ module Revisioner
         return agent_kind
       end
 
-      def read_file(filepath, filename)
-        agent = define_agent(filepath, filename) # мб сразу возвращать класс обработчика
+      def read_file(filepath)
+        agent = define_agent(filepath) # мб сразу возвращать класс обработчика
         parser_class = get_agent(agent)
 
 
@@ -107,9 +108,9 @@ module Revisioner
         encoding = 'windows-1251:utf-8' unless encodings.include? 'UTF-8'
 
         data = begin
-          parser_class.send(:revision_from_file, filepath, filename)
+          parser_class.send(:revision_from_file, filepath, date_min, date_max)
         rescue Exception => e
-          Log.error("#{filename}. Не удалось создать сверку с источниками денег: %s: %s\n\n%s" % [e.class, e.message, e.backtrace], component: Components::PAYMENT_AGENT_REVISION)
+          Log.error("#{filepath.split('/').last}. Не удалось создать сверку с источниками денег: %s: %s\n\n%s" % [e.class, e.message, e.backtrace], component: Components::PAYMENT_AGENT_REVISION)
           return false
         end
 
@@ -166,17 +167,17 @@ module Revisioner
           rev.save
           return true
         else
-          Log.error("#{filename}. Не удалось создать сверку с источниками денег: не удалось получить данные из файла", component: Components::PAYMENT_AGENT_REVISION)
+          Log.error("#{filepath.split('/').last}. Не удалось создать сверку с источниками денег: не удалось получить данные из файла", component: Components::PAYMENT_AGENT_REVISION)
           return false
         end
 
       end
 
-      def get_file(filepath, filename)
-        agent = define_agent(filepath, filename) # мб сразу возвращать класс обработчика
+      def get_file(filepath)
+        agent = define_agent(filepath) # мб сразу возвращать класс обработчика
         parser_class = get_agent(agent)
 
-        parser_class.send(:download_file, filepath, filename)
+        parser_class.send(:download_file, filepath)
       end
 
     end
