@@ -5,3 +5,4 @@ source 'https://rubygems.org'
 
 gem 'roo'
 gem 'rails'
+gem 'activerecord-import'

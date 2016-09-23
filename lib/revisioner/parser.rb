@@ -117,7 +117,12 @@ module Revisioner
           rev = Revisioner::AgentRevision.create(:agent_code => data[0][:agent_code],
                                     :date_start => date_min.beginning_of_day,
                                     :date_end => date_max.end_of_day)
-          rev.agent_transactions.create(data)
+          agent_transactions = []
+          # data.each do |d|
+          #   # d => {:agent_code=>3, :agent_id=>"741869063", :amount=>500, :date=>2016-09-15 23:53:36 +0300}
+          #   Revisioner::AgentTransaction.new(d)
+          # end
+          Revisioner::AgentTransaction.import(data)
 
           revision_result = rev.get_differences
 
