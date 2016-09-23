@@ -33,15 +33,15 @@ module Revisioner
       def get_agent(type) # private
         agent = case type
         when AGENT_QIWI
-          Qiwi
+          Parser::Qiwi
         when AGENT_WEBMONEY
-          Webmoney
+          Parser::Webmoney
         when AGENT_MOBI
-          Mobi
+          Parser::Mobi
         when AGENT_YANDEX
-          Yandex
+          Parser::Yandex
         when AGENT_MOBI_NEW
-          Mobi #TODO new mobi?
+          Parser::Mobi #TODO new mobi?
         end
 
         agent
@@ -80,7 +80,7 @@ module Revisioner
           else
             if WEBMONEY_CHECK["value"] == first_row[WEBMONEY_CHECK["position"]]
               AGENT_WEBMONEY
-            elsif first_row.count < 5
+            elsif first_row.count < 5 #TODO constant me!
               AGENT_MOBI_NEW
             end
           end
