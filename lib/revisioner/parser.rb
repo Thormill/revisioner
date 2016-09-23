@@ -109,7 +109,7 @@ module Revisioner
         data = begin
           parser_class.send(:revision_from_file, filepath, filename)
         rescue Exception => e
-          Log.error("#{filename}. Не удалось создать сверку с источниками денег: %s: %s" % [e.class, e.message], component: Components::PAYMENT_AGENT_REVISION)
+          Log.error("#{filename}. Не удалось создать сверку с источниками денег: %s: %s\n\n%s" % [e.class, e.message, e.backtrace], component: Components::PAYMENT_AGENT_REVISION)
           return false
         end
 
@@ -121,11 +121,11 @@ module Revisioner
 
           revision_result = rev.get_differences
 
-          case rev.count = revision_result.count
+          rev.status = case rev.count = revision_result.count
           when 0
-            rev.status = Revisioner::REVISION_SUCCESS
+            Revisioner::REVISION_SUCCESS
           else
-            rev.status = Revisioner::REVISION_FAILURE
+            Revisioner::REVISION_FAILURE
           end
 
 

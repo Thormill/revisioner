@@ -15,7 +15,7 @@ module Revisioner::Parser
   #   #
 
     class << self
-      def revision_from_file(filepath, filename) #Создание сверки
+      def revision_from_file(filepath, date_min, date_max) #Создание сверки
         data = []
 
         CSV.foreach(filepath, encoding: encoding, col_sep: ';', skip_blanks: true, headers: false, skip_lines: /^[^;]*$/) do |row|
@@ -32,7 +32,7 @@ module Revisioner::Parser
           end
         end
 
-        return data
+        return [data, date_max, date_min]
       end
     end
   end

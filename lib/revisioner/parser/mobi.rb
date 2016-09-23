@@ -14,12 +14,14 @@ module Revisioner::Parser
               ]
 
     class << self
-      def revision_from_file(filepath, filename) #Создание сверки
+      def revision_from_file(filepath, date_min, date_max) #Создание сверки
         data = []
 
+        filename = filepath.split('/').last
         xlsx = Roo::Spreadsheet.open(filepath, extension: filename.split('.')[-1].to_sym)
         sheet = xlsx.sheet(0)
         mobi_data = sheet.parse(header_search: HEADERS, clean: true)
+
         mobi_data.each do |hash|
           if hash["Дата и время перевода"].is_a?(Date)
             date = hash["Дата и время перевода"].to_time.localtime - 3.hours
@@ -34,7 +36,7 @@ module Revisioner::Parser
           end
         end
 
-        return data
+        return [data, date_max, date_min]
       end
 
     end
