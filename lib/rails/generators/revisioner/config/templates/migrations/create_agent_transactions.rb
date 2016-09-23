@@ -3,7 +3,7 @@ class CreateAgentTransactions < ActiveRecord::Migration
     create_table :agent_transactions do |t|
       t.integer :agent_revision_id, null: false
       t.integer :agent_code
-      t.integer :agent_id
+      t.string :agent_id
       t.date    :date
       t.integer :status, null: false, default: 0
       t.integer :amount, null: false
