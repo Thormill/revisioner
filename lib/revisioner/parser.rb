@@ -5,7 +5,7 @@ require "revisioner/parser/qiwi"
 require "revisioner/parser/yandex"
 require "revisioner/parser/mobi"
 
-class Revisioner::Parser
+module Revisioner::Parser
   AGENT_QIWI = 1
   AGENT_WEBMONEY = 2
   AGENT_MOBI = 3
