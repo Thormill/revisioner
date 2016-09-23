@@ -119,6 +119,7 @@ module Revisioner
               rev = Revisioner::AgentRevision.create(:agent_code => data[0][:agent_code],
                                         :date_start => date_min.beginning_of_day,
                                         :date_end => date_max.end_of_day)
+              data.map{|tr| tr[:agent_revision_id] = rev.id}
               Revisioner::AgentTransaction.import(data)
               revision_result = rev.get_differences
               rev.status = case rev.count = revision_result.count
