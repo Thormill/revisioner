@@ -33,15 +33,15 @@ module Revisioner
       def get_agent(type) # private
         agent = case type
         when AGENT_QIWI
-          Parser::Qiwi
+          Qiwi
         when AGENT_WEBMONEY
-          Parser::Webmoney
+          Webmoney
         when AGENT_MOBI
-          Parser::Mobi
+          Mobi
         when AGENT_YANDEX
-          Parser::Yandex
+          Yandex
         when AGENT_MOBI_NEW
-          Parser::Mobi #TODO new mobi?
+          Mobi #TODO new mobi?
         end
 
         agent
@@ -61,7 +61,7 @@ module Revisioner
 
           sheet.each do |row|
             row = row.inject([]) { |h, v| h << v.strip unless v.blank?; h}
-            if MOBI::HEADERS == row
+            if Mobi::HEADERS == row
               agent_kind = AGENT_MOBI
               break
             end
@@ -73,9 +73,9 @@ module Revisioner
           first_row = csv_data[0].inject([]) { |h, v| h << v.strip unless v.blank?; h}
 
           agent_kind = case first_row
-          when YANDEX::HEADERS
+          when Yandex::HEADERS
             AGENT_YANDEX
-          when QIWI::HEADERS
+          when Qiwi::HEADERS
             AGENT_QIWI
           else
             if WEBMONEY_CHECK["value"] == first_row[WEBMONEY_CHECK["position"]]
